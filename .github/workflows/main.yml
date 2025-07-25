@@ -1,0 +1,43 @@
+
+name: Publicar site no GitHub Pages
+
+# Define QUANDO a automação deve rodar
+on:
+  # Roda toda vez que houver um "push" (envio de código) na branch principal
+  push:
+    branches:
+      - main
+
+# Permissões necessárias para o workflow poder publicar o site
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Tarefas a serem executadas
+jobs:
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest # Roda em uma máquina virtual com Ubuntu
+    steps: # Os passos da nossa receita
+      # 1. Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Prepara o ambiente para a publicação
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 3. Faz o upload dos arquivos do site para serem publicados
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+     
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
